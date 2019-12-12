@@ -1,4 +1,4 @@
-import { flags, SfdxCommand } from '@salesforce/command';
+import { SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
 import { GitHandler, SfdxHandler, ConfigHandler } from '../../util';
@@ -14,12 +14,7 @@ export default class Init extends SfdxCommand {
   protected static requiresProject = false;
   protected static supportsUsername = false;
   protected static supportsDevhubUsername = false;
-  protected static flagsConfig = {
-    skipconfig: flags.boolean({
-      char: 's',
-      description: messages.getMessage('skipConfigFlagDescription'),
-    }),
-  };
+  protected static flagsConfig = {};
 
   public async run(): Promise<AnyJson> {
     this.ux.log(messages.getMessage('logo'));
