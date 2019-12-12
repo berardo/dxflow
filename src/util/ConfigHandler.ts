@@ -30,9 +30,39 @@ export class ConfigHandler {
 
   public async saveConfigFile(config: GitConfig): Promise<void> {
     const project = await SfdxProject.resolve();
-    fs.writeJson(
+    await fs.writeJson(
       join(project.getPath(), 'config', 'dxflow.json'),
       JSON.parse(JSON.stringify(config)),
+    );
+  }
+
+  public async saveVSCodeJsonSchema() {
+    const project = await SfdxProject.resolve();
+    const settings = await fs.readJsonMap(
+      join(project.getPath(), '.vscode', 'settings.json'),
+    );
+    const jsonSchemaDef = {
+      fileMatch: ['/config/dxflow.json'],
+      url:
+        'https://raw.githubusercontent.com/berardo/dxflow/master/src/util/ConfigSchema.json',
+    };
+    if (!settings['json.schemas']) {
+      settings['json.schemas'] = [];
+    }
+    if (
+      !(settings['json.schemas'] as any[]).some(e =>
+        Array.isArray(e.fileMatch),
+      ) ||
+      !(settings['json.schemas'] as any[]).some(e =>
+        e.fileMatch.some((fm: string) => fm.includes('dxflow.json')),
+      )
+    ) {
+      (settings['json.schemas'] as any[]).push(jsonSchemaDef);
+    }
+
+    await fs.writeJson(
+      join(project.getPath(), '.vscode', 'settings.json'),
+      settings,
     );
   }
 

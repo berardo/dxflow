@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/product.schema.json",
+  "title": "SFDX GitConfig",
+  "description": "Configuration schema to determine how DXFlow should operate on your SFDX project",
+  "type": "object",
+  "properties": {
+    "prefixes": {
+      "description": "A JSON map of support branch prefixes",
+      "type": "object",
+      "properties": {
+        "feature": {
+          "description": "The chosen prefix for feature branches",
+          "type": "string"
+        },
+        "release": {
+          "description": "The chosen prefix for release branches",
+          "type": "string"
+        },
+        "hotfix": {
+          "description": "The chosen prefix for hotfix branches",
+          "type": "string"
+        }
+      },
+      "required": ["feature", "release", "hotfix"]
+    },
+    "branches": {
+      "description": "A collection of JSON maps of production and develop branches. One entry per separate codebase",
+      "type": "array",
+      "items": {
+        "description": "A JSON map of production and develop branches",
+        "type": "object",
+        "properties": {
+          "production": {
+            "description": "The name of the production branch",
+            "examples": ["master"],
+            "type": "string"
+          },
+          "develop": {
+            "description": "The name of the develop branch",
+            "examples": ["develop"],
+            "type": "string"
+          },
+          "prefix": {
+            "description": "Optional prefix for the current codebase to be used by support branches",
+            "examples": ["codebase2"],
+            "type": "string"
+          }
+        },
+        "required": ["production", "develop"]
+      }
+    }
+  }
+}

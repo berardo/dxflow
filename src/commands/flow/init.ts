@@ -42,6 +42,8 @@ export default class Init extends SfdxCommand {
 
     await configHandler.saveConfigFile(config);
 
+    await configHandler.saveVSCodeJsonSchema();
+
     gitHandler.createInitialCommit();
 
     const json = config.branches.map(branch => {
