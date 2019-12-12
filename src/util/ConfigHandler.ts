@@ -1,30 +1,40 @@
 import { UX } from '@salesforce/command';
 import { prompt, QuestionCollection } from 'inquirer';
-import { Messages } from '@salesforce/core';
+import { Messages, SfdxProject, fs } from '@salesforce/core';
 import { GitHandler } from '.';
+import { join } from 'path';
+import { JsonMap } from '@salesforce/ts-types';
 
 Messages.importMessagesDirectory(__dirname);
 
 const messages = Messages.loadMessages('DXFlow', 'config-handler');
 
-export interface RepoBranches {
+export interface Codebase extends JsonMap {
   production: string;
   develop: string;
   prefix?: string;
 }
-export interface RepoPrefixes {
+export interface SupportPrefixes extends JsonMap {
   feature: string;
   release: string;
   hotfix: string;
 }
 
-export interface GitConfig {
-  prefixes: RepoPrefixes;
-  branches: RepoBranches[];
+export interface GitConfig extends JsonMap {
+  prefixes: SupportPrefixes;
+  branches: Codebase[];
 }
 
 export class ConfigHandler {
   constructor(private ux: UX) {}
+
+  public async saveConfigFile(config: GitConfig): Promise<void> {
+    const project = await SfdxProject.resolve();
+    fs.writeJson(
+      join(project.getPath(), 'config', 'dxflow.json'),
+      JSON.parse(JSON.stringify(config)),
+    );
+  }
 
   public async getGitConfig(): Promise<GitConfig> {
     const gitHandler = new GitHandler(this.ux);
@@ -42,7 +52,7 @@ export class ConfigHandler {
       },
     ]);
 
-    let branches: RepoBranches[] = [];
+    let branches: Codebase[] = [];
     for (let x = 1; x <= codebases.totalNumber; x++) {
       // Master (Production)
       existingBranches = await this.getPermanentBranch(
@@ -63,7 +73,7 @@ export class ConfigHandler {
           {
             type: 'input',
             name: 'answer',
-            message: messages.getMessage('codebasePrefixQuestion'),
+            message: messages.getMessage('codebasePrefixQuestion', [x]),
             default: `cb${x}`,
             validate: (value: string) => (!!value ? true : 'This is required'),
           },
@@ -73,7 +83,7 @@ export class ConfigHandler {
     }
 
     this.ux.log(messages.getMessage('nameConventions'));
-    const prefixes: RepoPrefixes = {
+    const prefixes: SupportPrefixes = {
       feature: await this.getSupportBranchPrefix('feature'),
       release: await this.getSupportBranchPrefix('release'),
       hotfix: await this.getSupportBranchPrefix('hotfix'),
@@ -85,7 +95,7 @@ export class ConfigHandler {
   private async getPermanentBranch(
     branchType: string,
     branches: string[],
-    branchData: RepoBranches[],
+    branchData: Codebase[],
     codebaseNumber: number,
   ): Promise<string[]> {
     let name: string;
@@ -136,7 +146,7 @@ export class ConfigHandler {
       name = promptForBranch.name;
     }
     if (branchType === 'master') {
-      branchData.push({ production: name });
+      branchData.push({ production: name, develop: null });
     } else {
       branchData[branchData.length - 1][branchType] = name;
     }

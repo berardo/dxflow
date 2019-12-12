@@ -12,8 +12,4 @@ module.exports = {
   checkoutDone: "Checkout '%s'",
   initialCommit: 'Initial Commit',
   newRepositoryQuestion: 'Would you like to start a new repository?',
-  totalCodebasesQuestion:
-    'How many parallel codebases do you want to maintain (e.g. multi-org development)?',
-  codebasePrefixQuestion:
-    'As this is not your first codebase, please define a prefix for its support branches',
 };

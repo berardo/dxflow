@@ -2,8 +2,7 @@ module.exports = {
   noBranchesYet: "No branches exist yet. Let's create them now.",
   totalCodebasesQuestion:
     'How many parallel codebases do you want to maintain (e.g. multi-org development)?',
-  codebasePrefixQuestion:
-    'As this is not your first codebase, please define a prefix for its support branches',
+  codebasePrefixQuestion: 'Define a prefix for codebase %s support branches',
   nameConventions:
     "Now, let's configure your naming convention for short-lived support branches",
   newRepositoryQuestion: 'Would you like to start a new repository?',
