@@ -52,10 +52,7 @@ export class RawGitHandler {
   }
 
   public createNewBranch(branchName: string): boolean {
-    const branchCreate = spawnSync(
-      'git',
-      `checkout -b ${branchName}`.split(' '),
-    );
+    const branchCreate = spawnSync('git', ['branch', branchName]);
     return branchCreate.status === 0;
   }
 

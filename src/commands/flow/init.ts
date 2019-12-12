@@ -44,22 +44,26 @@ export default class Init extends SfdxCommand {
 
     gitHandler.createInitialCommit();
 
-    config.branches.forEach(branch => {
-      branch.production = `${branch.production}: ${
-        gitHandler.createNewBranch(branch.production)
-          ? 'created'
-          : 'not created or pre-existing'
-      }`;
-      branch.develop = `${branch.develop}: ${
-        gitHandler.createNewBranch(branch.develop)
-          ? 'created'
-          : 'not created or pre-existing'
-      }`;
+    const json = config.branches.map(branch => {
+      return {
+        production: {
+          name: branch.production,
+          status: gitHandler.createNewBranch(branch.production)
+            ? 'created'
+            : 'not created or pre-existing',
+        },
+        develop: {
+          name: branch.develop,
+          status: gitHandler.createNewBranch(branch.develop)
+            ? 'created'
+            : 'not created or pre-existing',
+        },
+      };
     });
     gitHandler.checkoutBranch(config.branches[0].develop);
 
     this.ux.stopSpinner('done');
 
-    return config;
+    return json;
   }
 }
